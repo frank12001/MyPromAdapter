@@ -8,43 +8,47 @@ namespace MyPromAdapter.Controllers.MyAdapter
     {
         public enum Methods
         {
-            Get,Post
+            Null,Get,Post
         }
 
         public Methods Method;
-        public Uri Host;
+        public RestClient RestClient;
         public string Request;
-        public Dictionary<string, string> QueryString;
+        public Dictionary<string, string> QueryString = new Dictionary<string, string>();
+
+        public HttpAction()
+        {
+            Method = Methods.Null;
+        }
 
         public HttpAction(Methods method,Uri host,string request,Dictionary<string,string> querystring)
         {
             Method = method;
-            Host = host;
+            RestClient = new RestClient(host);
             Request = request;
             QueryString = querystring;
         }
 
-        public void Go()
+        public string Go()
         {
-            var client = new RestClient(Host);
             var request = new RestRequest(Request);
-            foreach (KeyValuePair<string,string> keyValuePair in QueryString)
+            foreach (var keyValuePair in QueryString)
             {
-                request.AddQueryParameter(keyValuePair.Key, keyValuePair.Value);
+                request.AddParameter(keyValuePair.Key, keyValuePair.Value);
             }
-
             IRestResponse response;
             switch (Method)
             {
                 case Methods.Post:
-                    response = client.Post(request);
+                    response = RestClient.Post(request);
                     break;
                 default:
-                    response = client.Get(request);
+                    response = RestClient?.Get(request);
                     break;
             }
-            Console.WriteLine($"Host: {Host} Req: {Request}, Result: {response.IsSuccessful} Content: {response.Content}");
-
+            Console.WriteLine($"Host: {RestClient?.BaseUrl} Req: {Request}, Result: {response?.IsSuccessful} Content: {response?.Content} , StatusCode {response?.StatusCode.ToString()}");
+            Console.WriteLine($"ErrorMsg: {response?.ErrorMessage}");
+            return response?.Content;
         }
     }
 }

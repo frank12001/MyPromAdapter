@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using RestSharp;
 
 namespace MyPromAdapter.Controllers.MyAdapter
 {
@@ -20,9 +21,20 @@ namespace MyPromAdapter.Controllers.MyAdapter
             {
                 case 1:
                     HttpAction[] actions = new HttpActionFactory(body).GetActions();
+                    foreach (var httpAction in actions)
+                    {
+                        httpAction.Go();
+                    }
                     result = Ok(JsonConvert.SerializeObject(body));
                     break;
                 default:
+//                    RestClient RestClient= new RestClient("http://35.229.191.68:31943");
+//                    var request = new RestRequest("api/count/1");
+//                    request.AddParameter("namespace", "default");
+//                    request.AddParameter("name", "myapp");
+//                    //request.AddParameter("replicas", "1");
+//                    var res = RestClient.Get(request);
+//                    result = Ok(res.IsSuccessful);
                     result = BadRequest();
                     break;
             }

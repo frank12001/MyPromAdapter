@@ -29,6 +29,11 @@ namespace MyPromAdapter.Controllers.MyAdapter
             {
                 return status.ToLower().Contains("resolved");
             }
+            
+            public bool IsFiring()
+            {
+                return status.ToLower().Contains("firing");
+            }
         }
     }
 }
